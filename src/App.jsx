@@ -1,40 +1,26 @@
 import React from "react";
 
+import {useDispatch, useSelector} from 'react-redux';
+
+import {fetchDataAction} from "./redux/actions"
+
+
 function App() {
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState(null);
-  const [data, setData] = React.useState(null);
+  const dispatch = useDispatch();
 
-  const api = "https://jsonplaceholder.typicode.com/todos/1";
+  const state = useSelector((state) => state)
 
-  React.useEffect(() => {
-    if (!data) {
-      setLoading(true);
-      fetch(api)
-        .then((response) => {
-          if (response.ok && response.status === 200) {
-            return response.json();
-          } else {
-            setError(response.status);
-            setLoading(false);
-          }
-        })
-        .then((json) => {
-          setData(json);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setError(err);
-          setLoading(false);
-        });
-    }
-  }, [data]);
+  const fetchDataHandler = () => {
+    dispatch(fetchDataAction());
+  };
 
   return (
     <div>
-      {loading && <div>loading...</div>}
-      {data && !loading && <div>{data.title}</div>}
-      {error && !loading && <div>error!</div>}
+      <button onClick={fetchDataHandler}>Получить данные</button>
+      <hr />
+      {state.fetchDataLoading && <div>loading...</div>}
+      {state.fetchData && !state.fetchDataLoading && <div>{state.fetchData.title}</div>}
+      {state.fetchDataError && !state.fetchDataLoading && <div>error!</div>}
     </div>
   );
 }

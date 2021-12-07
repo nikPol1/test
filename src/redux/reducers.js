@@ -31,7 +31,9 @@ export const reducer = (state = initialState, action) => {
           fetchDataError: null,
           fetchData: action.payload,
         };
-      }
+      };
+
+
       default:
         return state;
     }

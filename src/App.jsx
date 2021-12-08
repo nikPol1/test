@@ -1,38 +1,55 @@
 import React from "react";
 import io from "socket.io-client";
 
-import { Box, Grid, TextField, ButtonGroup } from "@mui/material";
+import Header from "./components/Header"
+import { Box, Grid, TextField, Button } from "@mui/material";
+import { Input } from '@mui/material';
+
+const socket = io("ws://localhost:8080");
 
 function App() {
   const [messages, setMessages] = React.useState([]);
-  const [txt, stTxt] = React.useState([]);
+  const [text, setText] = React.useState("");
 
   React.useEffect(() => {
-    const socket = io("ws://localhost:8080");
-    socket.on("RANDOM", (num) => {
-      console.log(num);
+    socket.on("CHAT", (msg) => {
+      const arr = messages;
+      arr.push(msg);
+      setText(arr);
     });
   }, []);
 
-  const chatGetHandler = (msg) => {
-    let arr = messages;
-    arr.push(msg);
-    setMessages(arr);
-  }
-
   const inputTextHandler = (e) => {
-    stTxt(e.target.value);
-  }
-  return <Box>
-  <Grid container>
-    {messages.map((message) => (
-      <Grid item>
-        {message.user}: {message.text}
+    setText(e.target.value);
+  };
+
+  const chatSendHandler = (e) => {
+    socket.emit("CHAT", text);
+  };
+
+  return (
+    <Box
+      sx={{
+        fontSize: "20px",
+      }}
+    >
+      <Header />
+      <Grid container spacing={2} direction="column">
+        {messages.map((message, i) => (
+          <Grid item key={i}>
+            {message}
+          </Grid>
+        ))}
       </Grid>
-    ))}
-  </Grid>
-  <hr/>
-  TextField
-</Box>
+      <hr />
+      <TextField onChange={inputTextHandler} variant="outlined" />
+      <Input>тест</Input>
+      <Input>тест</Input>
+      <Button onClick={chatSendHandler} variant="outlined">
+        send
+      </Button>
+    </Box>
+  );
+}
 
 export default App;

@@ -19,9 +19,9 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
-  setInterval(() => {
-    socket.emit("RANDOM", Math.floor(Math.random() * (1000 - 1)) + 1);
-  }, 500);
+  socket.on("CHAT", (msg) => {
+    socket.emit("CHAT", msg);
+  });
 });
 
 server.listen(8080, console.log("server started"));

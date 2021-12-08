@@ -1,35 +1,38 @@
 import React from "react";
+import io from "socket.io-client";
 
-import { useDispatch, useSelector } from "react-redux";
-
-import { fetchDataAction } from "./redux/actions";
+import { Box, Grid, TextField, ButtonGroup } from "@mui/material";
 
 function App() {
-  const dispatch = useDispatch();
+  const [messages, setMessages] = React.useState([]);
+  const [txt, stTxt] = React.useState([]);
 
-  const state = useSelector((state) => state);
+  React.useEffect(() => {
+    const socket = io("ws://localhost:8080");
+    socket.on("RANDOM", (num) => {
+      console.log(num);
+    });
+  }, []);
 
-  const fetchDataHandler = () => {
-    dispatch(fetchDataAction());
-  };
+  const chatGetHandler = (msg) => {
+    let arr = messages;
+    arr.push(msg);
+    setMessages(arr);
+  }
 
-  return (
-    <div>
-      <button onClick={fetchDataHandler}>Получить данные</button>
-      <hr />
-      {state.fetchDataLoading && <div>loading...</div>}
-      {state.fetchData && !state.fetchDataLoading && (
-        <div>
-          <ul>
-          {state.fetchData.map((item, i) => {
-            return <li key={item.id}>{item.title}</li>;
-          })}
-          </ul>
-        </div>
-      )}
-      {state.fetchDataError && !state.fetchDataLoading && <div>error!</div>}
-    </div>
-  );
-}
+  const inputTextHandler = (e) => {
+    stTxt(e.target.value);
+  }
+  return <Box>
+  <Grid container>
+    {messages.map((message) => (
+      <Grid item>
+        {message.user}: {message.text}
+      </Grid>
+    ))}
+  </Grid>
+  <hr/>
+  TextField
+</Box>
 
 export default App;
